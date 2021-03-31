@@ -36,7 +36,7 @@ jobs:
             })
 
       - name: Generate release notes
-        uses: RodrigoAmaroEng/release-notes-action@develop
+        uses: RodrigoAmaroEng/release-notes-action@ab2df03c4cf0e0d7e34e28c35f704b3bec2a3c2e
         id: notes
         with:
           release_version: ${{ steps.release_version.outputs.version_name }}
