@@ -9,6 +9,7 @@ async function run() {
     const prefix = core.getInput("tag_prefix");
     const releaseVersion = core.getInput("release_version");
     const reporterMode = core.getInput("reporter_mode");
+    console.log(JSON.stringify(github.context.payload));
     const owner = github.context.payload.repository_owner;
     const repository = github.context.payload.repository.replace(
       `${owner}/`,
