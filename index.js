@@ -10,11 +10,8 @@ async function run() {
     const releaseVersion = core.getInput("release_version");
     const reporterMode = core.getInput("reporter_mode");
     console.log(JSON.stringify(github.context.payload));
-    const owner = github.context.payload.repository_owner;
-    const repository = github.context.payload.repository.replace(
-      `${owner}/`,
-      ""
-    );
+    const owner = github.context.payload.repository.owner.login;
+    const repository = github.context.payload.repository.name;
     const token = github.context.payload.token;
 
     // Create instances
