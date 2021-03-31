@@ -35,7 +35,6 @@ jobs:
                 head,
               })
             const version = context.payload.ref.split('/')[3] + "." + commits.data.commits.length
-            console.log("Commits: " + version);
             core.setOutput("version", version);
 
       - name: Create tag
