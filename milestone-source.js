@@ -100,15 +100,5 @@ module.exports = class MilestoneSource {
             .filter((it) => it)
         );
       });
-    // .map(i => {
-    //   console.log(i.commit.message)
-    //   return i.commit.message.match(/\[\w+-\d+\]/)
-    // })
-    // .filter(i => (i))
-    // .map(i => {
-    //   console.log(i)
-    //   return i
-    // })
-    // .map(i => i[0]).distinct());
   }
 };

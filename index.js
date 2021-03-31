@@ -9,14 +9,13 @@ async function run() {
     const prefix = core.getInput("tag_prefix");
     const releaseVersion = core.getInput("release_version");
     const reporterMode = core.getInput("reporter_mode");
-    console.log(JSON.stringify(github.context.payload));
     const owner = github.context.payload.repository.owner.login;
     const repository = github.context.payload.repository.name;
     const token = github.context.payload.token;
 
     // Create instances
     let client = new MilestoneSource(owner, repository, token);
-    let reporter = new Reporter();
+    let reporter = new Reporter(releaseVersion);
 
     // Collecting information to produce the report
     let lastVersion = await client
