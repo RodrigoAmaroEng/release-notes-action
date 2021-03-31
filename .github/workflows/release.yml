@@ -23,8 +23,20 @@ jobs:
           version="${strarr[1]}".$commits
           echo "::set-output name=version_name::$version"
 
+      - name: Create tag
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.release_version.outputs.version_name }}",
+              sha: context.sha
+            })
+
       - name: Generate release notes
-        uses: RodrigoAmaroEng/release-notes-action@0.0.1
+        uses: RodrigoAmaroEng/release-notes-action@develop
         id: notes
         with:
           release_version: ${{ steps.release_version.outputs.version_name }}
