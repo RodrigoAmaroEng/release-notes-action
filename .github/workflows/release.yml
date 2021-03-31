@@ -15,13 +15,28 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Calculate release version
-        shell: bash
+        uses: actions/github-script@v3
         id: release_version
-        run: |
-          commits=$(git rev-list --count refs/remotes/origin/develop..HEAD)
-          IFS='/' read -ra strarr <<< "${GITHUB_REF#refs/heads/}"
-          version="${strarr[1]}".$commits
-          echo "::set-output name=version_name::$version"
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const opts = await github.repos.getBranch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branch: "develop",
+            });
+            const base = opts.data.commit.sha
+            const head = context.payload.after
+            const commits = await github.repos
+              .compareCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base,
+                head,
+              })
+            const version = context.payload.ref.split('/')[3] + "." + commits.data.commits.length
+            console.log("Commits: " + version);
+            core.setOutput("version", version);
 
       - name: Create tag
         uses: actions/github-script@v3
@@ -31,19 +46,19 @@ jobs:
             github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.release_version.outputs.version_name }}",
+              ref: "refs/tags/${{ steps.release_version.outputs.version }}",
               sha: context.sha
             })
 
       - name: Generate release notes
-        uses: RodrigoAmaroEng/release-notes-action@ab2df03c4cf0e0d7e34e28c35f704b3bec2a3c2e
+        uses: ./
         id: notes
         with:
-          release_version: ${{ steps.release_version.outputs.version_name }}
+          release_version: ${{ steps.release_version.outputs.version }}
 
       - name: Create a Release
         uses: actions/create-release@master
         with:
-          tag_name: ${{ steps.library_version.outputs.version_name }}
-          release_name: ${{ steps.library_version.outputs.version_name }}
+          tag_name: ${{ steps.release_version.outputs.version }}
+          release_name: ${{ steps.release_version.outputs.version }}
           body: ${{ steps.notes.outputs.notes }}
