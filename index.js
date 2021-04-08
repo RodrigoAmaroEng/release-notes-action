@@ -10,15 +10,16 @@ async function run() {
     const releaseVersion = core.getInput("release_version");
     const reporterMode = core.getInput("reporter_mode");
     const taskServiceURL = core.getInput("task_service");
+    const token = core.getInput("token") || github.context.payload.token;
     const owner = github.context.payload.repository.owner.login;
     const repository = github.context.payload.repository.name;
-    const token = github.context.payload.token;
 
     // Create instances
     let client = new MilestoneSource(owner, repository, token);
     let reporter = new Reporter(releaseVersion, taskServiceURL);
 
     // Collecting information to produce the report
+    console.log(`Searching for last version on ${owner}/${repository}`);
     let lastVersion = await client
       .getLatestRelease()
       .then((it) => `${prefix}${it}`);
