@@ -5,6 +5,10 @@ inputs:
     description: 'Prefix for tag versions. Default: "" Eg: v1.2.3, 1.2.3'
     required: false
     default: ""
+  token:
+    description: "Github token to use in the queries"
+    required: false
+    default: null
   release_version:
     description: "Version for the release to be deployed. Must be the same as the tag that was generated"
     required: true
