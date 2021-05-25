@@ -4,6 +4,10 @@ Array.prototype.distinct = function () {
   return this.filter((it, i) => this.indexOf(it) === i);
 };
 
+Array.prototype.notNull = function () {
+  return this.filter((it) => it);
+};
+
 const query_LastReleaseVersion = `
 releases(last: 1) {
   nodes {
@@ -89,6 +93,14 @@ module.exports = class MilestoneSource {
         edge.node.associatedPullRequests.nodes.map((node) => node.title)
       )
       .distinct()
-      .map((item) => new ReleaseItem(item));
+      .map((item) => {
+        try {
+          return new ReleaseItem(item);
+        } catch (ex) {
+          console.log(`Could not parse ${item}: ${ex}`);
+          return null;
+        }
+      })
+      .notNull();
   }
 };

@@ -1,6 +1,9 @@
 name: "Release Notes Generator"
 description: "Generate release notes based on chosen source between last release and the current one"
 inputs:
+  github_token:
+    description: "Token with GraphQL permissions to make queries in GitHub. For more info see https://docs.github.com/en/graphql/guides/forming-calls-with-graphql#authenticating-with-graphql"
+    required: true
   tag_prefix:
     description: 'Prefix for tag versions. Default: "" Eg: v1.2.3, 1.2.3'
     required: false

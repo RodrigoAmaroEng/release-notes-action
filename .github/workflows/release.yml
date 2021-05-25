@@ -53,6 +53,7 @@ jobs:
         uses: ./
         id: notes
         with:
+          github_token: ${{ secrets.ACTION_TOKEN }}
           task_service: "https://github.com/RodrigoAmaroEng/release-notes-action/issues/"
           release_version: ${{ steps.release_version.outputs.version }}
 

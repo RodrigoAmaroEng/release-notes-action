@@ -12,7 +12,7 @@ async function run() {
     const taskServiceURL = core.getInput("task_service");
     const owner = github.context.payload.repository.owner.login;
     const repository = github.context.payload.repository.name;
-    const token = github.context.payload.token;
+    const token = core.getInput("github_token");
 
     // Create instances
     let client = new MilestoneSource(owner, repository, token);
