@@ -88,6 +88,7 @@ module.exports = class MilestoneSource {
     const result = await this.client(
       this.buildQuery(query_PullsBetween(lastReleaseCursor, releaseTag))
     );
+    if (!result.repository.changes) return [];
     return result.repository.changes.target.history.edges
       .flatMap((edge) =>
         edge.node.associatedPullRequests.nodes.map((node) => node.title)
