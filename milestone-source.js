@@ -16,33 +16,25 @@ releases(last: 1) {
 }
 `;
 
-const query_LastReleaseCursor = function (version) {
+const query_LastReleaseCommitTimeStamp = function (version) {
   return `
-ref(qualifiedName:"refs/tags/${version}") {
-  target {
-    ... on Commit {
-      history(first:1) {
-        edges {
-          cursor
-        }
-      }
-    }
+object(expression:"${version}") {
+  ... on Commit {
+    committedDate
   }
 }`;
 };
 
-const query_PullsBetween = function (lastReleaseCursor, releaseTag) {
+const query_PullsBetween = function (startDate, finishDate, releaseTag) {
   return `
-  changes: ref(qualifiedName: "refs/tags/${releaseTag}") {
-    target {
-      ... on Commit {
-        history(after: "${lastReleaseCursor}") {
-          edges {
-            node {
-              associatedPullRequests(first:50) {
-                nodes {
-                  title
-                }
+  changes: object(expression: "${releaseTag}") {
+    ... on Commit {
+      history(since: "${startDate}", until: "${finishDate}") {
+        edges {
+          node {
+            associatedPullRequests(first:50) {
+              nodes {
+                title
               }
             }
           }
@@ -77,19 +69,19 @@ module.exports = class MilestoneSource {
     return result.repository.releases.nodes[0].name;
   }
 
-  async getTagCursor(version) {
+  async getTagTimestamp(version) {
     const result = await this.client(
-      this.buildQuery(query_LastReleaseCursor(version))
+      this.buildQuery(query_LastReleaseCommitTimeStamp(version))
     );
-    return result.repository.ref.target.history.edges[0].cursor;
+    return result.repository.object.committedDate;
   }
 
-  async getPullsSinceLastRelease(lastReleaseCursor, releaseTag) {
+  async getPullsSinceLastRelease(startDate, finishDate, releaseTag) {
     const result = await this.client(
-      this.buildQuery(query_PullsBetween(lastReleaseCursor, releaseTag))
+      this.buildQuery(query_PullsBetween(startDate, finishDate, releaseTag))
     );
     if (!result.repository.changes) return [];
-    return result.repository.changes.target.history.edges
+    return result.repository.changes.history.edges
       .flatMap((edge) =>
         edge.node.associatedPullRequests.nodes.map((node) => node.title)
       )

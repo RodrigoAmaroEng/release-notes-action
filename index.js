@@ -22,12 +22,15 @@ async function run() {
     let lastVersion = await client.getLatestRelease();
     lastVersion = `${prefix}${lastVersion}`;
     console.log(`Latest release identified: ${lastVersion}`);
-    let lastVersionCursor = await client.getTagCursor(lastVersion);
-    console.log(`Last version cursor: ${lastVersionCursor}`);
+    let lastVersionTimeStamp = await client.getTagTimestamp(lastVersion);
+    console.log(`Last version timestamp: ${lastVersionTimeStamp}`);
     let newVersion = `${prefix}${releaseVersion}`;
     console.log(`This release is: ${newVersion}`);
+    let newVersionTimeStamp = await client.getTagTimestamp(newVersion);
+    console.log(`New version timestamp: ${newVersionTimeStamp}`);
     let pulls = await client.getPullsSinceLastRelease(
-      lastVersionCursor,
+      lastVersionTimeStamp,
+      newVersionTimeStamp,
       newVersion
     );
     console.log(
